@@ -27,6 +27,33 @@
     </android.support.design.widget.AppBarLayout>
 
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <Button
+                android:text="@string/decrypt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/decryptButton"
+                android:drawableLeft="@drawable/ic_up"
+                android:drawableStart="@drawable/ic_up"
+                android:layout_weight="1"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+
+            <Button
+                android:text="@string/encrypt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/encryptButton"
+                android:drawableLeft="@drawable/ic_down"
+                android:drawableStart="@drawable/ic_down"
+                android:layout_weight="1"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+        </LinearLayout>
+
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -73,20 +100,20 @@
 
                 <TextView
                     android:text="@string/decrypted_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/textView2"
                     android:layout_weight="1"/>
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
                     android:id="@+id/decryptedTextEdit"
-                    android:inputType="textMultiLine"
-                    android:minHeight="142dp"
-                    style="@android:style/Widget.DeviceDefault.EditText"
-                    android:layout_weight="1"/>
+                    android:layout_width="0dip"
+                    android:layout_height="100dp"
+                    android:layout_weight="2"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLength="2000"
+                    android:maxLines="4"
+                    android:scrollHorizontally="false"/>
             </TableRow>
 
 
@@ -95,50 +122,23 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:text="@string/encrypted_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:id="@+id/textView3"
-                    android:layout_weight="1"/>
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/encrypted_text"/>
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:id="@+id/encyiptedTextEdit"
-                    android:minHeight="142dp"
-                    android:inputType="textMultiLine"
-                    style="@android:style/Widget.DeviceDefault.EditText"
-                    android:layout_weight="1"/>
+                    android:id="@+id/encryptedTextEdit"
+                    android:layout_width="0dip"
+                    android:layout_height="100dp"
+                    android:layout_weight="2"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLength="2000"
+                    android:maxLines="4"
+                    android:scrollHorizontally="false"/>
             </TableRow>
         </TableLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-
-            <Button
-                android:text="@string/decrypt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/decryptButton"
-                android:drawableLeft="@drawable/ic_up"
-                android:drawableStart="@drawable/ic_up"
-                android:layout_weight="1"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
-
-            <Button
-                android:text="@string/encrypt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/encryptButton"
-                android:drawableLeft="@drawable/ic_down"
-                android:drawableStart="@drawable/ic_down"
-                android:layout_weight="1"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
-        </LinearLayout>
 
     </LinearLayout>
 

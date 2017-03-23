@@ -7,6 +7,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,8 +16,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
-import static android.text.InputType.TYPE_CLASS_TEXT;
-import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import android.util.Base64;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
   CompoundButton.OnCheckedChangeListener {
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     passwordEdit = (EditText)findViewById(R.id.passwordEdit);
     decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
-    encryptedEdit = (EditText)findViewById(R.id.encyiptedTextEdit);
+    encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
 
     showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
 
@@ -73,12 +77,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   @Override
   public void onClick(View v)
   {
+    String result;
     int id = v.getId();
     switch(id)
     {
       case R.id.decryptButton:
+        try {
+          result = OpenSslAes.decrypt(passwordEdit.getText().toString(), encryptedEdit.getText().toString());
+          decryptedEdit.setText(result);
+        }
+
+        catch (Exception e) {
+          Log.e("CryptoNotes", "Exception", e);
+          Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+        }
         break;
       case R.id.encryptButton:
+        try {
+          result = OpenSslAes.encrypt(passwordEdit.getText().toString(), decryptedEdit.getText().toString());
+          encryptedEdit.setText(result);
+        }
+        catch(Exception e) {
+          Log.e("CryptoNotes", "Exception", e);
+          Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+        }
         break;
     }
   }
@@ -94,4 +116,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         break;
     }
   }
+
 }
