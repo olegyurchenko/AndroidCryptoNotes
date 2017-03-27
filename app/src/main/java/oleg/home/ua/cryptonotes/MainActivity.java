@@ -8,9 +8,18 @@ package oleg.home.ua.cryptonotes;
   import android.support.v7.widget.Toolbar;
   import android.view.Menu;
   import android.view.MenuItem;
+  import android.widget.Button;
+  import android.widget.CheckBox;
+  import android.widget.EditText;
 
 
 public class MainActivity extends AppCompatActivity {
+
+  EditText passwordEdit, decryptedEdit, encryptedEdit;
+  CheckBox showPasswordBox;
+  Button encryptButton, decryptButton;
+  ViewPager viewPager;
+  PagerAdapter adapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     tabLayout.addTab(tabLayout.newTab().setText(getResources().getText(R.string.encrypted_text)));
     tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-    final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-    final PagerAdapter adapter = new PagerAdapter
+    viewPager = (ViewPager) findViewById(R.id.pager);
+    adapter = new PagerAdapter
       (getSupportFragmentManager(), tabLayout.getTabCount());
     viewPager.setAdapter(adapter);
     viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -45,6 +54,22 @@ public class MainActivity extends AppCompatActivity {
 
       }
     });
+
+    passwordEdit = (EditText)findViewById(R.id.passwordEdit);
+/*
+    decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
+    encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
+
+    showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
+
+    encryptButton = (Button) findViewById(R.id.encryptButton);
+    decryptButton = (Button) findViewById(R.id.decryptButton);
+
+    encryptButton.setOnClickListener(this);
+    decryptButton.setOnClickListener(this);
+    showPasswordBox.setOnCheckedChangeListener(this);
+  */
+
   }
 
   @Override
