@@ -8,9 +8,8 @@
         android:id="@+id/encryptedTextEdit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:ems="10"
+        android:background="@drawable/encrypted_edit_text"
         android:inputType="textCapSentences|textMultiLine"
-        android:maxLength="2000"
-        android:maxLines="4"
-        android:scrollHorizontally="false"
-        />
+        android:scrollHorizontally="false"/>
 </LinearLayout>

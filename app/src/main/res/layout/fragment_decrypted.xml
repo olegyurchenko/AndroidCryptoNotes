@@ -8,9 +8,9 @@
         android:id="@+id/decryptedTextEdit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:inputType="textCapSentences|textMultiLine"
-        android:maxLength="2000"
-        android:maxLines="4"
+        android:ems="10"
+        android:background="@drawable/decrypted_edit_text"
+        android:inputType="textMultiLine"
         android:scrollHorizontally="false"
         />
 </LinearLayout>
