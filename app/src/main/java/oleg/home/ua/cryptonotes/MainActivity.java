@@ -45,84 +45,103 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-
-    TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-    tabLayout.addTab(tabLayout.newTab().setText(getResources().getText(R.string.decrypted_text)));
-    tabLayout.addTab(tabLayout.newTab().setText(getResources().getText(R.string.encrypted_text)));
-    tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-    viewPager = (ViewPager) findViewById(R.id.pager);
-    adapter = new PagerAdapter
-      (getSupportFragmentManager(), tabLayout.getTabCount());
-    viewPager.setAdapter(adapter);
-    viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-    tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-      @Override
-      public void onTabSelected(TabLayout.Tab tab) {
-        viewPager.setCurrentItem(tab.getPosition());
-      }
-
-      @Override
-      public void onTabUnselected(TabLayout.Tab tab) {
-
-      }
-
-      @Override
-      public void onTabReselected(TabLayout.Tab tab) {
-
-      }
-    });
-
-
-    passwordEdit = (EditText)findViewById(R.id.passwordEdit);
-
-    //decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
-    decryptedEdit = (EditText)viewPager.findViewWithTag(R.id.decryptedTextEdit);
-
-    //encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
-
-    showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
-
-    Button button;
-
-    button = (Button) findViewById(R.id.encryptBtn);
-    button.setOnClickListener(this);
-
-    button = (Button) findViewById(R.id.decryptBtn);
-    button.setOnClickListener(this);
-
-    button = (Button) findViewById(R.id.openBtn);
-    button.setOnClickListener(this);
-
-    button = (Button) findViewById(R.id.saveBtn);
-    button.setOnClickListener(this);
-
-    showPasswordBox.setOnCheckedChangeListener(this);
-
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.menu_main, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    int id = item.getItemId();
-    if (id == R.id.action_settings) {
+    protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
+  
+      TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+      tabLayout.addTab(tabLayout.newTab().setText(getResources().getText(R.string.decrypted_text)));
+      tabLayout.addTab(tabLayout.newTab().setText(getResources().getText(R.string.encrypted_text)));
+      tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+  
+      viewPager = (ViewPager) findViewById(R.id.pager);
+      adapter = new PagerAdapter
+        (getSupportFragmentManager(), tabLayout.getTabCount());
+      viewPager.setAdapter(adapter);
+      viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+      tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+          tabSelect(tab.getPosition());
+        }
+    
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+      
+        }
+    
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+      
+        }
+      });
+  
+  
+      passwordEdit = (EditText)findViewById(R.id.passwordEdit);
+  
+      //decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
+      decryptedEdit = (EditText)viewPager.findViewWithTag(R.id.decryptedTextEdit);
+  
+      //encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
+  
+      showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
+  
+      Button button;
+  
+      button = (Button) findViewById(R.id.encryptBtn);
+      button.setOnClickListener(this);
+  
+      button = (Button) findViewById(R.id.decryptBtn);
+      button.setOnClickListener(this);
+  
+      button = (Button) findViewById(R.id.openBtn);
+      button.setOnClickListener(this);
+  
+      button = (Button) findViewById(R.id.saveBtn);
+      button.setOnClickListener(this);
+  
+      showPasswordBox.setOnCheckedChangeListener(this);
+      
+      enableButtons();
+    }
+  
+    private void enableButtons()
+    {
+      Button button = (Button) findViewById(R.id.saveBtn);
+      encryptedEdit = (EditText)viewPager.findViewById(R.id.encryptedTextEdit);
+  
+      button.setEnabled(
+        viewPager.getCurrentItem() != 0
+          && encryptedEdit != null
+          && !encryptedEdit.getText().toString().isEmpty()
+      );
+    }
+    
+    private void tabSelect(int position)
+    {
+      viewPager.setCurrentItem(position);
+      enableButtons();
+    }
+  
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+      getMenuInflater().inflate(R.menu.menu_main, menu);
       return true;
     }
-
-    return super.onOptionsItemSelected(item);
-  }
-
-  @Override
+  
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+      int id = item.getItemId();
+      if (id == R.id.action_settings) {
+        return true;
+      }
+    
+      return super.onOptionsItemSelected(item);
+    }
+  
+    @Override
   public void onClick(View v) {
     decryptedEdit = (EditText)viewPager.findViewById(R.id.decryptedTextEdit);
     encryptedEdit = (EditText)viewPager.findViewById(R.id.encryptedTextEdit);
@@ -140,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           Log.e("CryptoNotes", "Exception", e);
           Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
         }
+        enableButtons();
         break;
       case R.id.encryptBtn:
         try {
@@ -150,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           Log.e("CryptoNotes", "Exception", e);
           Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
         }
+        enableButtons();
         break;
       case R.id.openBtn:
         open(viewPager.getCurrentItem() == 0 ? FileMode.Decrypt : FileMode.Encrypt);
