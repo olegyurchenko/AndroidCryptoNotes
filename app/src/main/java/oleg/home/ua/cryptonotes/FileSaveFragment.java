@@ -222,12 +222,13 @@ public class FileSaveFragment extends DialogFragment
 		 * */
 	
 		// Set up the container view.
-		LinearLayout.LayoutParams rootLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-				                                                             ViewGroup.LayoutParams.WRAP_CONTENT, 
-				                                                             0.0F);
+    LinearLayout.LayoutParams rootLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+      ViewGroup.LayoutParams.WRAP_CONTENT,
+      0.0F);
 		root = new LinearLayout(getActivity());
 		root.setOrientation(LinearLayout.VERTICAL);
 		root.setLayoutParams(rootLayout);
+    //root.setMinimumHeight(400);
 
 		/* 
 		 * Set up initial sub-directory list.
@@ -242,9 +243,10 @@ public class FileSaveFragment extends DialogFragment
 		 * Don't want the popup shrinking and growing all the time. Tried it. 
 		 * Most disconcerting.
 		 * */
-		LinearLayout.LayoutParams listViewLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                                 150,
-                                                                                 0.0F);
+    LinearLayout.LayoutParams listViewLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+      600,
+      0.0F);
+
 		directoryView = new ListView(getActivity());
 		directoryView.setLayoutParams(listViewLayout);
 		directoryView.setAdapter(displayFormat);
@@ -264,7 +266,9 @@ public class FileSaveFragment extends DialogFragment
 		 * */
 		LinearLayout nameArea = new LinearLayout(getActivity());
 		nameArea.setOrientation(LinearLayout.HORIZONTAL);
-		nameArea.setLayoutParams(rootLayout);
+		nameArea.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+      150,
+      0.0F));
 		root.addView(nameArea);
 		
 	    currentPath = new TextView(getActivity());

@@ -158,7 +158,7 @@ public class FileSelectFragment extends DialogFragment
 	
 	/** Create new instance of a file save popup. 
 	 * 
-	 * @param Mode - Directory selector or File selector?
+	 * @param selectionMode - Directory selector or File selector?
 	 * @param resourceID_OK - String resource ID for the positive (OK) button.
 	 * @param resourceID_Cancel - String resource ID for the negative (Cancel) button.
 	 * @param resourceID_Title - String resource ID for the dialogue's title.
@@ -245,8 +245,9 @@ public class FileSelectFragment extends DialogFragment
 	
 		// Set up the container view.
 		LinearLayout.LayoutParams rootLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-				                                                             ViewGroup.LayoutParams.WRAP_CONTENT, 
-				                                                             0.0F);
+			ViewGroup.LayoutParams.WRAP_CONTENT,
+			0.0F);
+
 		root = new LinearLayout(getActivity());
 		root.setOrientation(LinearLayout.VERTICAL);
 		root.setLayoutParams(rootLayout);
@@ -265,8 +266,9 @@ public class FileSelectFragment extends DialogFragment
 		 * Most disconcerting.
 		 * */
 		LinearLayout.LayoutParams listViewLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                                 150,
-                                                                                 0.0F);
+			ViewGroup.LayoutParams.WRAP_CONTENT,
+			0.0F);
+		
 		directoryView = new ListView(getActivity());
 		directoryView.setLayoutParams(listViewLayout);
 		directoryView.setAdapter(displayFormat);
@@ -295,7 +297,7 @@ public class FileSelectFragment extends DialogFragment
 		root.addView(nameArea);
 		
 	    selectedPath = new TextView(getActivity());
-		selectedPath.setText(currentDirectory.getAbsolutePath() + "/");
+		selectedPath.setText(currentDirectory.getAbsolutePath() + File.pathSeparator);
 		nameArea.addView(selectedPath);
 		
 		// We only display a selected filename in FileSelector mode. 
@@ -383,14 +385,15 @@ public class FileSelectFragment extends DialogFragment
 			currentFile = fileList.get(pos);
 			
 			String name = currentFile.getName();
-			
-			if (!currentFile.isDirectory() && 
+      
+      if(currentFile.isDirectory() || name.equals(PARENT))
+        onItemLongClick(arg0,  arg1, pos, id);
+      else
+			if (!currentFile.isDirectory() &&
 			    !name.equals(PARENT) &&
 			    selectionMode == Mode.FileSelector ) {
 				selectedFile.setText(currentFile.getName());
 			}
-				
-			
 		}
 		
 	}

@@ -17,9 +17,13 @@ package oleg.home.ua.cryptonotes;
   import android.widget.EditText;
   import android.widget.Toast;
 
+  import java.io.BufferedReader;
   import java.io.File;
   import java.io.FileInputStream;
   import java.io.FileOutputStream;
+  import java.io.IOException;
+  import java.io.InputStream;
+  import java.io.InputStreamReader;
   import java.util.ArrayList;
 
 
@@ -182,33 +186,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         edit = decryptedEdit;
       else
         edit = encryptedEdit;
-
+  
+      String inputFileName = String.format("%s/%s", absolutePath, fileName);
+      StringBuilder result = new StringBuilder();
       try {
-        FileInputStream in = new FileInputStream(absolutePath + "/" + fileName);
-        edit.setText(in.read());
+        FileInputStream is = new FileInputStream(inputFileName);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    
+        String line;
+        boolean flag = false;
+        while ((line = reader.readLine()) != null) {
+          result.append(flag ? "\n" : "").append(line);
+          flag = true;
+        }
+      }
+  
+      catch(IOException e) {
+        Log.e("CryptoNotes", "Read file error", e);
       }
 
-      catch(Exception e) {
-        Log.e("CryptoNotes", "Exception", e);
-        Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
-      }
+      edit.setText(result.toString());
     }
 
     @Override
     public boolean isValid(String absolutePath, String fileName) {
-      return true;
+      return !(absolutePath == null
+        || fileName == null
+        || fileName.isEmpty()
+        || !FileSaveFragment.FileExists(absolutePath, fileName)
+      );
     }
 
     @Override
     public boolean onCanSave(String absolutePath, String fileName) {
+     if(absolutePath == null || fileName == null || fileName.isEmpty())
+       return false;
+    
+      //FODO: FileExistsDialog FileSaveFragment.FileExists(absolutePath, fileName)
       return true;
     }
 
     @Override
     public void onConfirmSave(String absolutePath, String fileName) {
-      if(absolutePath == null || fileName == null)
+      if(absolutePath == null || fileName == null || fileName.isEmpty())
         return;
 
+      if(!fileName.endsWith(".txt"))
+        fileName += ".txt";
+  
+      String outputFileName = String.format("%s/%s", absolutePath, fileName);
+      
+      
       decryptedEdit = (EditText) viewPager.findViewById(R.id.decryptedTextEdit);
       encryptedEdit = (EditText) viewPager.findViewById(R.id.encryptedTextEdit);
 
@@ -220,10 +248,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         edit = encryptedEdit;
 
       try {
-        FileOutputStream out = new FileOutputStream(absolutePath + "/" + fileName);
+        FileOutputStream out = new FileOutputStream(outputFileName);
         out.write(edit.getText().toString().getBytes());
         out.flush();
         out.close();
+        Toast.makeText(this, String.format("File '%s' was saved successfully", outputFileName), Toast.LENGTH_LONG).show();
       }
 
       catch(Exception e) {
@@ -244,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 // Restrict selection to *.xml files
       ArrayList<String> allowedExtensions = new ArrayList<String>();
-      allowedExtensions.add(".xml");
+      allowedExtensions.add(".txt");
       fsf.setFilter(FileSelectFragment.FiletypeFilter(allowedExtensions));
 
       fsf.show(getFragmentManager(), "OpenFileTag");
@@ -252,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     void save(FileMode mode) {
       FileSaveFragment fsf = FileSaveFragment.newInstance(
-        "txt",
+        ".txt",
         android.R.string.ok,
         android.R.string.cancel,
         mode == FileMode.Decrypt ? R.string.decrypted_file_save_as : R.string.encrypted_file_save_as,
