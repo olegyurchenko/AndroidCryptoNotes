@@ -6,18 +6,23 @@ package oleg.home.ua.cryptonotes;
   import android.support.v4.view.ViewPager;
   import android.support.v7.app.AppCompatActivity;
   import android.support.v7.widget.Toolbar;
+  import android.text.method.PasswordTransformationMethod;
+  import android.util.Log;
   import android.view.Menu;
   import android.view.MenuItem;
+  import android.view.View;
   import android.widget.Button;
   import android.widget.CheckBox;
+  import android.widget.CompoundButton;
   import android.widget.EditText;
+  import android.widget.Toast;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,
+  CompoundButton.OnCheckedChangeListener {
 
   EditText passwordEdit, decryptedEdit, encryptedEdit;
   CheckBox showPasswordBox;
-  Button encryptButton, decryptButton;
   ViewPager viewPager;
   PagerAdapter adapter;
 
@@ -55,7 +60,32 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
+
     passwordEdit = (EditText)findViewById(R.id.passwordEdit);
+
+    //decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
+    decryptedEdit = (EditText)viewPager.findViewWithTag(R.id.decryptedTextEdit);
+
+    //encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
+
+    showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
+
+    Button button;
+
+    button = (Button) findViewById(R.id.encryptBtn);
+    button.setOnClickListener(this);
+
+    button = (Button) findViewById(R.id.decryptBtn);
+    button.setOnClickListener(this);
+
+    button = (Button) findViewById(R.id.openBtn);
+    button.setOnClickListener(this);
+
+    button = (Button) findViewById(R.id.saveBtn);
+    button.setOnClickListener(this);
+
+    showPasswordBox.setOnCheckedChangeListener(this);
+
 /*
     decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
     encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
@@ -86,6 +116,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public void onClick(View v) {
+    decryptedEdit = (EditText)viewPager.findViewById(R.id.decryptedTextEdit);
+    encryptedEdit = (EditText)viewPager.findViewById(R.id.encryptedTextEdit);
+
+    String result;
+    switch (v.getId())
+    {
+      case R.id.decryptBtn:
+        try {
+          result = OpenSslAes.decrypt(passwordEdit.getText().toString(), encryptedEdit.getText().toString());
+          decryptedEdit.setText(result);
+        }
+
+        catch (Exception e) {
+          Log.e("CryptoNotes", "Exception", e);
+          Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+        }
+        break;
+      case R.id.encryptBtn:
+        try {
+          result = OpenSslAes.encrypt(passwordEdit.getText().toString(), decryptedEdit.getText().toString());
+          encryptedEdit.setText(result);
+        }
+        catch(Exception e) {
+          Log.e("CryptoNotes", "Exception", e);
+          Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+        }
+        break;
+      case R.id.openBtn:
+        break;
+      case R.id.saveBtn:
+        break;
+    }
+  }
+
+  @Override
+  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+    switch (buttonView.getId())
+    {
+      case R.id.showPassCheck:
+        passwordEdit.setTransformationMethod(isChecked ? null : new PasswordTransformationMethod());
+        break;
+    }
   }
 }
 
