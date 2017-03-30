@@ -9,5 +9,11 @@
     <string name="encrypt">Encrypt</string>
     <string name="open">Open</string>
     <string name="save">Save</string>
+    <string name="decrypted_file_save_as">Save decrypted file as</string>
+    <string name="encrypted_file_save_as">Save encrypted file as</string>
+    <string name="decrypted_hint_file_save_as">Decrypted file</string>
+    <string name="encrypted_hint_file_save_as">Encrypted file</string>
+    <string name="decrypted_file_open">Open decrypted file</string>
+    <string name="encrypted_file_open">Open encrypted file</string>
 
 </resources>

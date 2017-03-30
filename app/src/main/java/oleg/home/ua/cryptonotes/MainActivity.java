@@ -17,16 +17,30 @@ package oleg.home.ua.cryptonotes;
   import android.widget.EditText;
   import android.widget.Toast;
 
+  import java.io.File;
+  import java.io.FileInputStream;
+  import java.io.FileOutputStream;
+  import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
-  CompoundButton.OnCheckedChangeListener {
+  CompoundButton.OnCheckedChangeListener,
+  FileSaveFragment.Callbacks,
+  FileSelectFragment.Callbacks
+  {
+    enum FileMode {
+      Encrypt,
+      Decrypt
+    };
 
-  EditText passwordEdit, decryptedEdit, encryptedEdit;
-  CheckBox showPasswordBox;
-  ViewPager viewPager;
-  PagerAdapter adapter;
 
-  @Override
+    EditText passwordEdit, decryptedEdit, encryptedEdit;
+    CheckBox showPasswordBox;
+    ViewPager viewPager;
+    PagerAdapter adapter;
+
+
+    @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
@@ -86,20 +100,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     showPasswordBox.setOnCheckedChangeListener(this);
 
-/*
-    decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
-    encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
-
-    showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
-
-    encryptButton = (Button) findViewById(R.id.encryptButton);
-    decryptButton = (Button) findViewById(R.id.decryptButton);
-
-    encryptButton.setOnClickListener(this);
-    decryptButton.setOnClickListener(this);
-    showPasswordBox.setOnCheckedChangeListener(this);
-  */
-
   }
 
   @Override
@@ -148,8 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         break;
       case R.id.openBtn:
+        open(viewPager.getCurrentItem() == 0 ? FileMode.Decrypt : FileMode.Encrypt);
         break;
       case R.id.saveBtn:
+        save(viewPager.getCurrentItem() == 0 ? FileMode.Decrypt : FileMode.Encrypt);
         break;
     }
   }
@@ -164,103 +166,102 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         break;
     }
   }
-}
 
-/*
-public class MainActivity extends AppCompatActivity implements View.OnClickListener,
-  CompoundButton.OnCheckedChangeListener {
+    @Override
+    public void onConfirmSelect(String absolutePath, String fileName) {
 
-  EditText passwordEdit, decryptedEdit, encryptedEdit;
-  CheckBox showPasswordBox;
-  Button encryptButton, decryptButton;
+      if(absolutePath == null || fileName == null)
+        return;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
+      decryptedEdit = (EditText) viewPager.findViewById(R.id.decryptedTextEdit);
+      encryptedEdit = (EditText) viewPager.findViewById(R.id.encryptedTextEdit);
 
+      EditText edit;
 
-    passwordEdit = (EditText)findViewById(R.id.passwordEdit);
-    decryptedEdit = (EditText)findViewById(R.id.decryptedTextEdit);
-    encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
+      if (viewPager.getCurrentItem() == 0)
+        edit = decryptedEdit;
+      else
+        edit = encryptedEdit;
 
-    showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
+      try {
+        FileInputStream in = new FileInputStream(absolutePath + "/" + fileName);
+        edit.setText(in.read());
+      }
 
-    encryptButton = (Button) findViewById(R.id.encryptButton);
-    decryptButton = (Button) findViewById(R.id.decryptButton);
+      catch(Exception e) {
+        Log.e("CryptoNotes", "Exception", e);
+        Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+      }
+    }
 
-    encryptButton.setOnClickListener(this);
-    decryptButton.setOnClickListener(this);
-    showPasswordBox.setOnCheckedChangeListener(this);
-
-   }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_main, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
+    @Override
+    public boolean isValid(String absolutePath, String fileName) {
       return true;
     }
 
-    return super.onOptionsItemSelected(item);
-  }
-
-  @Override
-  public void onClick(View v)
-  {
-    String result;
-    int id = v.getId();
-    switch(id)
-    {
-      case R.id.decryptButton:
-        try {
-          result = OpenSslAes.decrypt(passwordEdit.getText().toString(), encryptedEdit.getText().toString());
-          decryptedEdit.setText(result);
-        }
-
-        catch (Exception e) {
-          Log.e("CryptoNotes", "Exception", e);
-          Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
-        }
-        break;
-      case R.id.encryptButton:
-        try {
-          result = OpenSslAes.encrypt(passwordEdit.getText().toString(), decryptedEdit.getText().toString());
-          encryptedEdit.setText(result);
-        }
-        catch(Exception e) {
-          Log.e("CryptoNotes", "Exception", e);
-          Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
-        }
-        break;
+    @Override
+    public boolean onCanSave(String absolutePath, String fileName) {
+      return true;
     }
-  }
 
-  @Override
-  public void onCheckedChanged(CompoundButton v, boolean isChecked) {
-    int id = v.getId();
+    @Override
+    public void onConfirmSave(String absolutePath, String fileName) {
+      if(absolutePath == null || fileName == null)
+        return;
 
-    switch(id)
-    {
-      case R.id.showPassCheck:
-        passwordEdit.setTransformationMethod(isChecked ? null : new PasswordTransformationMethod());
-        break;
+      decryptedEdit = (EditText) viewPager.findViewById(R.id.decryptedTextEdit);
+      encryptedEdit = (EditText) viewPager.findViewById(R.id.encryptedTextEdit);
+
+      EditText edit;
+
+      if (viewPager.getCurrentItem() == 0)
+        edit = decryptedEdit;
+      else
+        edit = encryptedEdit;
+
+      try {
+        FileOutputStream out = new FileOutputStream(absolutePath + "/" + fileName);
+        out.write(edit.getText().toString().getBytes());
+        out.flush();
+        out.close();
+      }
+
+      catch(Exception e) {
+        Log.e("CryptoNotes", "Exception", e);
+        Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+      }
+
     }
+
+    void open(FileMode mode) {
+      FileSelectFragment fsf = FileSelectFragment.newInstance(FileSelectFragment.Mode.FileSelector,
+        android.R.string.ok,
+        android.R.string.cancel,
+        mode == FileMode.Decrypt ? R.string.decrypted_file_open :  R.string.encrypted_file_open,
+        R.mipmap.ic_launcher,
+        R.drawable.ic_dir,
+        R.drawable.ic_file);
+
+// Restrict selection to *.xml files
+      ArrayList<String> allowedExtensions = new ArrayList<String>();
+      allowedExtensions.add(".xml");
+      fsf.setFilter(FileSelectFragment.FiletypeFilter(allowedExtensions));
+
+      fsf.show(getFragmentManager(), "OpenFileTag");
+    }
+
+    void save(FileMode mode) {
+      FileSaveFragment fsf = FileSaveFragment.newInstance(
+        "txt",
+        android.R.string.ok,
+        android.R.string.cancel,
+        mode == FileMode.Decrypt ? R.string.decrypted_file_save_as : R.string.encrypted_file_save_as,
+        mode == FileMode.Decrypt ? R.string.decrypted_hint_file_save_as : R.string.encrypted_hint_file_save_as,
+        R.drawable.ic_save);
+
+      fsf.show(getFragmentManager(), "SaveFileTag");
+    }
+
+
   }
 
-}
-*/
