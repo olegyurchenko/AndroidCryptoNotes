@@ -10,6 +10,8 @@
     <string name="open">Open</string>
     <string name="save">Save</string>
     <string name="share">Share</string>
+    <string name="send">Send</string>
+    <string name="send_to">Send to …</string>
     <string name="decrypted_file_save_as">Save decrypted file as</string>
     <string name="encrypted_file_save_as">Save encrypted file as</string>
     <string name="decrypted_hint_file_save_as">Decrypted file</string>

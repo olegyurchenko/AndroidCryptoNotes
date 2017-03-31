@@ -2,6 +2,7 @@ package oleg.home.ua.cryptonotes;
 
 
   import android.content.Intent;
+  import android.icu.util.Calendar;
   import android.net.Uri;
   import android.os.Bundle;
   import android.support.design.widget.TabLayout;
@@ -9,6 +10,8 @@ package oleg.home.ua.cryptonotes;
   import android.support.v4.view.ViewPager;
   import android.support.v7.app.AppCompatActivity;
   import android.support.v7.widget.Toolbar;
+  import android.text.format.DateFormat;
+  import android.text.method.DateTimeKeyListener;
   import android.text.method.PasswordTransformationMethod;
   import android.util.Log;
   import android.view.Menu;
@@ -28,7 +31,9 @@ package oleg.home.ua.cryptonotes;
   import java.io.IOException;
   import java.io.InputStream;
   import java.io.InputStreamReader;
+  import java.text.SimpleDateFormat;
   import java.util.ArrayList;
+  import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CheckBox showPasswordBox;
     ViewPager viewPager;
     PagerAdapter adapter;
-    Button openBtn, saveBtn, shareBtn, encryptBtn, decryptBtn;
+    Button openBtn, saveBtn, shareBtn, sendBtn, encryptBtn, decryptBtn;
 
 
     @Override
@@ -106,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   
       saveBtn = (Button) findViewById(R.id.saveBtn);
       saveBtn.setOnClickListener(this);
+  
+      sendBtn = (Button) findViewById(R.id.sendBtn);
+      sendBtn.setOnClickListener(this);
 
       shareBtn = (Button) findViewById(R.id.shareBtn);
       shareBtn.setOnClickListener(this);
@@ -123,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           && !encryptedEdit.getText().toString().isEmpty();
 
       saveBtn.setEnabled(saveEnabled);
+      sendBtn.setEnabled(saveEnabled);
       shareBtn.setEnabled(saveEnabled);
     }
     
@@ -184,6 +193,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         break;
       case R.id.saveBtn:
         save();
+        break;
+      case R.id.sendBtn:
+        send();
         break;
       case R.id.shareBtn:
         share();
@@ -336,27 +348,84 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     static final String FOLDER_NAME = "docs";
     static final String FILE_NAME = "data.txt";
+  
+    void send() {
+  
+      try {
+    
+        encryptedEdit = (EditText) viewPager.findViewById(R.id.encryptedTextEdit);
+/*
+        //File folder = new File(getCacheDir(), FOLDER_NAME);
+        File folder = new File(getFilesDir(), FOLDER_NAME);
+        File f = new File(folder, "1.txt");
+        if(!save(f, encryptedEdit.getText().toString()))
+          return;
+    
+        Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), AUTHORITIES_NAME, f);
+*/
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        //sendIntent.setData(contentUri);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, encryptedEdit.getText());
+        //sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        //sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+      }
+
+      catch (Exception e) {
+        Log.e("CryptoNotes", "Exception", e);
+        Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+      }
+    }
+  
+    static final String AUTHORITIES_NAME = "oleg.home.ua.cryptonotes.fileprovider";
+    
+    String getFileNameFromTimeStamp() {
+      Date d = new Date();
+      return DateFormat.format("yyyyMMddhhmmss", d.getTime()).toString();
+    }
 
     void share() {
-      encryptedEdit = (EditText) viewPager.findViewById(R.id.encryptedTextEdit);
-
-      //File folder = new File(getExternalFilesDir(null), FOLDER_NAME);
-      //File folder = new File(getFilesDir(), FOLDER_NAME);
-      File folder = new File(getCacheDir(), FOLDER_NAME);
-      File f = new File(folder, "1.txt");
-      if(save(f, encryptedEdit.getText().toString()))
-        share(f);
+ 
+      try {
+    
+        encryptedEdit = (EditText) viewPager.findViewById(R.id.encryptedTextEdit);
+        
+  
+        File folder = new File(getCacheDir(), FOLDER_NAME);
+        File f = new File(folder, String.format("%s.txt", getFileNameFromTimeStamp()));
+        if(!save(f, encryptedEdit.getText().toString()))
+          return;
+    
+        Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), AUTHORITIES_NAME, f);
+          //Uri.parse("file://" + f); //FileProvider.getUriForFile(getApplicationContext(), AUTHORITIES_NAME, f);
+    
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        //sendIntent.putExtra(Intent.EXTRA_TEXT, encryptedEdit.getText());
+        sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+      }
+  
+      catch (Exception e) {
+        Log.e("CryptoNotes", "Exception", e);
+        Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+      }
     }
 
 
-    static final String AUTHORITIES_NAME = "oleg.home.ua.cryptonotes.fileprovider";
 
     private void share(File fileSharing) {
       try {
         Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), AUTHORITIES_NAME, fileSharing);
 
-        //Intent intent = new Intent(Intent.ACTION_VIEW);
-        Intent intent = new Intent(Intent.ACTION_SEND);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        //Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setData(contentUri);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(intent);
@@ -366,6 +435,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
       }
     }
-
   }
 
