@@ -1,8 +1,11 @@
 package oleg.home.ua.cryptonotes;
 
 
+  import android.content.Intent;
+  import android.net.Uri;
   import android.os.Bundle;
   import android.support.design.widget.TabLayout;
+  import android.support.v4.content.FileProvider;
   import android.support.v4.view.ViewPager;
   import android.support.v7.app.AppCompatActivity;
   import android.support.v7.widget.Toolbar;
@@ -21,6 +24,7 @@ package oleg.home.ua.cryptonotes;
   import java.io.File;
   import java.io.FileInputStream;
   import java.io.FileOutputStream;
+  import java.io.FileWriter;
   import java.io.IOException;
   import java.io.InputStream;
   import java.io.InputStreamReader;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CheckBox showPasswordBox;
     ViewPager viewPager;
     PagerAdapter adapter;
+    Button openBtn, saveBtn, shareBtn, encryptBtn, decryptBtn;
 
 
     @Override
@@ -87,36 +92,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       //encryptedEdit = (EditText)findViewById(R.id.encryptedTextEdit);
   
       showPasswordBox = (CheckBox)findViewById(R.id.showPassCheck);
-  
-      Button button;
-  
-      button = (Button) findViewById(R.id.encryptBtn);
-      button.setOnClickListener(this);
-  
-      button = (Button) findViewById(R.id.decryptBtn);
-      button.setOnClickListener(this);
-  
-      button = (Button) findViewById(R.id.openBtn);
-      button.setOnClickListener(this);
-  
-      button = (Button) findViewById(R.id.saveBtn);
-      button.setOnClickListener(this);
-  
       showPasswordBox.setOnCheckedChangeListener(this);
-      
+
+
+      encryptBtn = (Button) findViewById(R.id.encryptBtn);
+      encryptBtn.setOnClickListener(this);
+  
+      decryptBtn = (Button) findViewById(R.id.decryptBtn);
+      decryptBtn.setOnClickListener(this);
+  
+      openBtn = (Button) findViewById(R.id.openBtn);
+      openBtn.setOnClickListener(this);
+  
+      saveBtn = (Button) findViewById(R.id.saveBtn);
+      saveBtn.setOnClickListener(this);
+
+      shareBtn = (Button) findViewById(R.id.shareBtn);
+      shareBtn.setOnClickListener(this);
+
       enableButtons();
     }
   
     private void enableButtons()
     {
-      Button button = (Button) findViewById(R.id.saveBtn);
       encryptedEdit = (EditText)viewPager.findViewById(R.id.encryptedTextEdit);
-  
-      button.setEnabled(
+
+      boolean saveEnabled =
         viewPager.getCurrentItem() != 0
           && encryptedEdit != null
-          && !encryptedEdit.getText().toString().isEmpty()
-      );
+          && !encryptedEdit.getText().toString().isEmpty();
+
+      saveBtn.setEnabled(saveEnabled);
+      shareBtn.setEnabled(saveEnabled);
     }
     
     private void tabSelect(int position)
@@ -176,7 +183,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         open(viewPager.getCurrentItem() == 0 ? FileMode.Decrypt : FileMode.Encrypt);
         break;
       case R.id.saveBtn:
-        save(viewPager.getCurrentItem() == 0 ? FileMode.Decrypt : FileMode.Encrypt);
+        save();
+        break;
+      case R.id.shareBtn:
+        share();
         break;
     }
   }
@@ -268,19 +278,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       else
         edit = encryptedEdit;
 
-      try {
-        FileOutputStream out = new FileOutputStream(outputFileName);
-        out.write(edit.getText().toString().getBytes());
-        out.flush();
-        out.close();
+      if(save(new File(outputFileName), edit.getText().toString()))
         Toast.makeText(this, String.format("File '%s' was saved successfully", outputFileName), Toast.LENGTH_LONG).show();
-      }
 
-      catch(Exception e) {
+    }
+
+    boolean save(File f, String data) {
+      boolean result = true;
+      try {
+        File folder = new File(f.getParent());
+        if (!folder.exists()) {
+          if(!folder.mkdirs())
+            throw new Exception(String.format("Error create folder '%s'", folder.getName()));
+        }
+        FileWriter writer = new FileWriter(f);
+        writer.write(data);
+        writer.flush();
+        writer.close();
+      }
+      catch (Exception e)
+      {
         Log.e("CryptoNotes", "Exception", e);
         Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+        result = false;
       }
-
+      return result;
     }
 
     void open(FileMode mode) {
@@ -300,18 +322,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       fsf.show(getFragmentManager(), "OpenFileTag");
     }
 
-    void save(FileMode mode) {
+    void save() {
       FileSaveFragment fsf = FileSaveFragment.newInstance(
         ".txt",
         android.R.string.ok,
         android.R.string.cancel,
-        mode == FileMode.Decrypt ? R.string.decrypted_file_save_as : R.string.encrypted_file_save_as,
-        mode == FileMode.Decrypt ? R.string.decrypted_hint_file_save_as : R.string.encrypted_hint_file_save_as,
+        R.string.encrypted_file_save_as,
+        R.string.encrypted_hint_file_save_as,
         R.drawable.ic_save);
 
       fsf.show(getFragmentManager(), "SaveFileTag");
     }
 
+    static final String FOLDER_NAME = "docs";
+    static final String FILE_NAME = "data.txt";
+
+    void share() {
+      encryptedEdit = (EditText) viewPager.findViewById(R.id.encryptedTextEdit);
+
+      //File folder = new File(getExternalFilesDir(null), FOLDER_NAME);
+      //File folder = new File(getFilesDir(), FOLDER_NAME);
+      File folder = new File(getCacheDir(), FOLDER_NAME);
+      File f = new File(folder, "1.txt");
+      if(save(f, encryptedEdit.getText().toString()))
+        share(f);
+    }
+
+
+    static final String AUTHORITIES_NAME = "oleg.home.ua.cryptonotes.fileprovider";
+
+    private void share(File fileSharing) {
+      try {
+        Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), AUTHORITIES_NAME, fileSharing);
+
+        //Intent intent = new Intent(Intent.ACTION_VIEW);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setData(contentUri);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
+      }
+      catch (Exception e) {
+        Log.e("CryptoNotes", "Exception", e);
+        Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
+      }
+    }
 
   }
 

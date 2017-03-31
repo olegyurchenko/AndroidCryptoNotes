@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidCryptoNotes.iml" filepath="$PROJECT_DIR$/AndroidCryptoNotes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CryptoNotes.iml" filepath="$PROJECT_DIR$/CryptoNotes.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
