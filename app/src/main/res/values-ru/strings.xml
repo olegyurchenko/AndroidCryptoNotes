@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Секретные заметки</string>
+    <string name="about">О программе</string>
+    <string name="about_text">Инструмент для работы с зашифрованными заметками V%1$s\\n(код версии -%2$d, сборка  %3$s)</string>
+    <string name="action_settings">Настройки</string>
+    <string name="decrypt">Расшифровать</string>
+    <string name="decrypted_file_open">Открыть нешифрованный файл</string>
+    <string name="decrypted_file_save_as">Сохренить не шифрованный файл</string>
+    <string name="decrypted_hint_file_save_as">Нешифрованный файл</string>
+    <string name="decrypted_text">Открытый текст</string>
+    <string name="encrypt">Шифровать</string>
+    <string name="encrypted_file_open">Открыть шифрованный файл</string>
+    <string name="encrypted_file_save_as">Сохранить шифрованный файл как</string>
+    <string name="encrypted_hint_file_save_as">Шифрованный файл</string>
+    <string name="encrypted_text">Шифрованный текст</string>
+    <string name="open">Открыть</string>
+    <string name="password">Пароль</string>
+    <string name="save">Сохранить</string>
+    <string name="send">Отправить</string>
+    <string name="send_to">Отправить к</string>
+    <string name="share">Поделиться</string>
+    <string name="show_password">Показать пароль</string>
+</resources>
