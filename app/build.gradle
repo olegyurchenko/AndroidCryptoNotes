@@ -3,12 +3,27 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
+    /*By Oleg <*/
+    def Properties versionProps = new Properties()
+    def versionPropsFile = file('version.properties')
+    if (versionPropsFile.exists())
+        versionProps.load(new FileInputStream(versionPropsFile))
+    def code = (versionProps['VERSION_CODE'] ?: "0").toInteger() + 1
+    versionProps['VERSION_CODE'] = code.toString()
+    versionProps.store(versionPropsFile.newWriter(), null)
+    /*By Oleg >*/
+
     defaultConfig {
+        /*By Oleg <*/
+        buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
+        /*By Oleg >*/
+
         applicationId "oleg.home.ua.cryptonotes"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,7 +40,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.google.android.gms:play-services-appindexing:9.8.0'
     compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support:support-v4:25.3.0'
     testCompile 'junit:junit:4.12'
 }

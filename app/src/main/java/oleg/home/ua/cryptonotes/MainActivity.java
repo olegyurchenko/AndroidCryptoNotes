@@ -1,6 +1,8 @@
 package oleg.home.ua.cryptonotes;
 
 
+  import android.app.AlertDialog;
+  import android.app.Dialog;
   import android.content.Intent;
   import android.icu.util.Calendar;
   import android.net.Uri;
@@ -17,10 +19,13 @@ package oleg.home.ua.cryptonotes;
   import android.view.Menu;
   import android.view.MenuItem;
   import android.view.View;
+  import android.view.Window;
+  import android.view.WindowManager;
   import android.widget.Button;
   import android.widget.CheckBox;
   import android.widget.CompoundButton;
   import android.widget.EditText;
+  import android.widget.LinearLayout;
   import android.widget.Toast;
 
   import java.io.BufferedReader;
@@ -34,6 +39,7 @@ package oleg.home.ua.cryptonotes;
   import java.text.SimpleDateFormat;
   import java.util.ArrayList;
   import java.util.Date;
+  import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
@@ -149,11 +155,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-      int id = item.getItemId();
-      if (id == R.id.action_settings) {
-        return true;
+      switch(item.getItemId())
+      {
+        case R.id.action_about:
+          helpAboutDialog();
+          return true;
       }
-    
+
       return super.onOptionsItemSelected(item);
     }
   
@@ -435,5 +443,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast.makeText(this, String.format("Error:%s", e.getMessage()), Toast.LENGTH_LONG).show();
       }
     }
+
+    public String getAppTimeStamp()
+    {
+      String timeStamp = "";
+      try {
+        long buildDate = BuildConfig.TIMESTAMP;
+        java.text.DateFormat formatter = java.text.DateFormat.getDateTimeInstance();
+        //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        timeStamp = formatter.format(buildDate);
+      }
+      catch (Exception e) {
+        //Ignore
+      }
+
+      return timeStamp;
+    }
+
+    private String aboutMessage() {
+      String versionName = BuildConfig.VERSION_NAME;
+      int versionCode = BuildConfig.VERSION_CODE;
+
+      return String.format(Locale.getDefault(), getString(R.string.about_text),
+        versionName,
+        versionCode,
+        getAppTimeStamp());
+    }
+
+    private Dialog createAboutDialog () {
+      AlertDialog.Builder adb = new AlertDialog.Builder(this);
+      adb.setTitle(R.string.app_name);
+      adb.setIcon(R.mipmap.ic_launcher);
+      adb.setMessage(aboutMessage());
+
+      adb.setPositiveButton(android.R.string.ok, null);
+
+      return adb.create();
+    }
+
+    private void helpAboutDialog () {
+      Dialog dialog = createAboutDialog();
+
+
+      dialog.show();
+    }
+
   }
 

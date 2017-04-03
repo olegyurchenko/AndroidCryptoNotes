@@ -18,5 +18,7 @@
     <string name="encrypted_hint_file_save_as">Encrypted file</string>
     <string name="decrypted_file_open">Open decrypted file</string>
     <string name="encrypted_file_open">Open encrypted file</string>
+    <string name="about">About</string>
+    <string name="about_text">Tool for work with encrypted notes\nV%1$s (version code -%2$d, build  %3$s)</string>
 
 </resources>
