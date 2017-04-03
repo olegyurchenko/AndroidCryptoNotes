@@ -5,9 +5,9 @@ It is doubly dangerous to store such data on a mobile gadget (phone), which can 
 
 The *CryptoNotes* application allows you to encrypt / decrypt any text with AES (Advanced Encryption Standard) algorithm.
 
-The resulting encrypted test can already be stored, sent by mail or share.
+The resulting encrypted test can already be stored, sent by mail or stored in the cloud.
 
-Encryption / decryption is compatible with the OpenSSL utility., 
+Encryption / decryption is compatible with the OpenSSL utility. 
 
 The encryption result will be similar to running openssl utilities:
 ```shell
