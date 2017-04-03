@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Секретні нотатки</string>
     <string name="about">Про програму</string>
-    <string name="about_text">Інструмент для роботи з шифрованими нотатками V%1$s\\n(код версії -%2$d, збірка  %3$s)</string>
+    <string name="about_text">Інструмент для роботи з шифрованими нотатками V%1$s\n(код версії -%2$d, збірка  %3$s)</string>
     <string name="action_settings">Налаштування</string>
     <string name="decrypt">Розшифрувати</string>
     <string name="decrypted_file_open">Відкрити нешифрований файл</string>
@@ -17,7 +17,7 @@
     <string name="open">Відкрити</string>
     <string name="password">Пароль</string>
     <string name="save">Зберегти</string>
-    <string name="send">Выдправити</string>
+    <string name="send">Відправити</string>
     <string name="send_to">Відправити до</string>
     <string name="share">Поділитися</string>
     <string name="show_password">Показати пароль</string>

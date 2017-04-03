@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Секретные заметки</string>
     <string name="about">О программе</string>
-    <string name="about_text">Инструмент для работы с зашифрованными заметками V%1$s\\n(код версии -%2$d, сборка  %3$s)</string>
+    <string name="about_text">Инструмент для работы с зашифрованными заметками V%1$s\n(код версии -%2$d, сборка  %3$s)</string>
     <string name="action_settings">Настройки</string>
     <string name="decrypt">Расшифровать</string>
     <string name="decrypted_file_open">Открыть нешифрованный файл</string>
